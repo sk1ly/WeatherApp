@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import ru.sk1ly.weatherapp.data.Weather
-import ru.sk1ly.weatherapp.screens.MainCard
-import ru.sk1ly.weatherapp.screens.TabLayout
+import ru.sk1ly.weatherapp.elements.MainCard
+import ru.sk1ly.weatherapp.elements.TabLayout
 import ru.sk1ly.weatherapp.ui.theme.WeatherAppTheme
 
 class MainActivity : ComponentActivity() {

@@ -1,4 +1,4 @@
-package ru.sk1ly.weatherapp.screens
+package ru.sk1ly.weatherapp.elements
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -13,7 +13,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -88,7 +87,12 @@ fun MainCard(weather: MutableState<Weather>) {
                     }
                     Text(
                         modifier = Modifier.padding(top = 5.dp),
-                        text = "23°C/12°C",
+                        text =
+                        if (weather.value.daily.isNotEmpty()) {
+                            "${weather.value.daily[0].maxTemp}/${weather.value.daily[0].minTemp}°C"
+                        } else {
+                            "0/0°C"
+                        },
                         style = TextStyle(fontSize = 16.sp),
                         color = Color.White
                     )
@@ -146,9 +150,20 @@ fun TabLayout(weather: MutableState<Weather>) {
             state = pagerState,
             modifier = Modifier.weight(1.0f)
         ) { index ->
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(weather.value.hourly) {
-                    item -> ListItem(hourlyWeather = item)
+            when (index) {
+                0 -> {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(weather.value.hourly) { item ->
+                            ListItem(hourlyWeather = item)
+                        }
+                    }
+                }
+                1 -> {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(weather.value.daily) { item ->
+                            ListItem(dailyWeather = item)
+                        }
+                    }
                 }
             }
         }

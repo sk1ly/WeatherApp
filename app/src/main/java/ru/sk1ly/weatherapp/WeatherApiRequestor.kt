@@ -11,7 +11,7 @@ import ru.sk1ly.weatherapp.data.CurrentWeather
 import ru.sk1ly.weatherapp.data.DailyWeather
 import ru.sk1ly.weatherapp.data.HourlyWeather
 import ru.sk1ly.weatherapp.data.Weather
-import kotlin.math.max
+import java.util.*
 
 class WeatherApiRequestor {
 
@@ -27,7 +27,6 @@ class WeatherApiRequestor {
             val url =
                 "$API_URL?latitude=55.75&longitude=37.62&$CONST_PARAMS" // TODO Убрать потом хардкод координат
             val queue = Volley.newRequestQueue(context)
-            var weather = Weather()
             val request = StringRequest(
                 Request.Method.GET,
                 url,
@@ -66,7 +65,8 @@ class WeatherApiRequestor {
             val tempArray = hourlyJson.getJSONArray("temperature_2m")
             val weatherCodeArray = hourlyJson.getJSONArray("weathercode")
             val hourlyWeather = mutableListOf<HourlyWeather>()
-            for (i in 0 until 24) {
+            val currentHour = Calendar.getInstance(TimeZone.getTimeZone("Europe/Moscow")).get(Calendar.HOUR_OF_DAY)
+            for (i in currentHour until currentHour + 24) {
                 hourlyWeather.add(
                     HourlyWeather(
                         time = timeArray.getString(i).split("T")[1],
@@ -88,10 +88,10 @@ class WeatherApiRequestor {
             for (i in 0 until 7) {
                 dailyWeather.add(
                     DailyWeather(
-                        date = dateArray.get(i).toString(),
-                        maxTemp = tempMaxArray.get(i).toString(),
-                        minTemp = tempMinArray.get(i).toString(),
-                        weatherCode = weatherCodeArray.get(i).toString()
+                        date = dateArray.getString(i),
+                        maxTemp = tempMaxArray.getInt(i),
+                        minTemp = tempMinArray.getInt(i),
+                        weatherCode = weatherCodeArray.getInt(i)
                     )
                 )
             }
