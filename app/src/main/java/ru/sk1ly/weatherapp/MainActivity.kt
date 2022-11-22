@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import ru.sk1ly.weatherapp.data.Weather
 import ru.sk1ly.weatherapp.elements.MainCard
@@ -33,7 +34,7 @@ class MainActivity : ComponentActivity() {
                     contentDescription = "Background",
                 )
                 Column {
-                    MainCard(weather)
+                    MainCard(weather, LocalContext.current)
                     TabLayout(weather)
                 }
             }

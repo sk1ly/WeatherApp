@@ -1,6 +1,9 @@
 package ru.sk1ly.weatherapp.elements
 
+import android.content.Context
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,8 +28,9 @@ import ru.sk1ly.weatherapp.data.Weather
 import ru.sk1ly.weatherapp.data.WeatherCode
 import ru.sk1ly.weatherapp.ui.theme.BlueLight
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun MainCard(weather: MutableState<Weather>) {
+fun MainCard(weather: MutableState<Weather>, context: Context) {
 
     Column(
         modifier = Modifier.padding(5.dp)
@@ -42,16 +46,27 @@ fun MainCard(weather: MutableState<Weather>) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 10.dp, bottom = 5.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(
-                        modifier = Modifier.padding(top = 8.dp, start = 8.dp),
-                        text = weather.value.current.dateTime,
-                        style = TextStyle(fontSize = 15.sp),
-                        color = Color.White
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = weather.value.current.dateTime,
+                            style = TextStyle(fontSize = 15.sp),
+                            color = Color.White
+                        )
+                        IconButton(onClick = { /*TODO*/ }) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_sync),
+                                tint = Color.White,
+                                contentDescription = "Sync icon button"
+                            )
+                        }
+                    }
                     Image(
+                        // TODO Заменить на инфо, переместить к температуре
                         modifier = Modifier
                             .size(35.dp)
                             .padding(top = 5.dp, bottom = 5.dp, end = 8.dp),
@@ -60,7 +75,7 @@ fun MainCard(weather: MutableState<Weather>) {
                     )
                 }
                 Text(
-                    text = "Moscow",
+                    text = weather.value.city,
                     style = TextStyle(fontSize = 24.sp),
                     color = Color.White
                 )
@@ -74,35 +89,31 @@ fun MainCard(weather: MutableState<Weather>) {
                     style = TextStyle(fontSize = 16.sp),
                     color = Color.White
                 )
+                Text(
+                    modifier = Modifier.padding(top = 5.dp),
+                    text =
+                    if (weather.value.daily.isNotEmpty()) {
+                        "${weather.value.daily[0].maxTemp}/${weather.value.daily[0].minTemp}°C"
+                    } else {
+                        "0/0°C"
+                    },
+                    style = TextStyle(fontSize = 16.sp),
+                    color = Color.White
+                )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.Top
                 ) {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_search),
-                            tint = Color.White,
-                            contentDescription = "Search icon button"
-                        )
-                    }
-                    Text(
-                        modifier = Modifier.padding(top = 5.dp),
-                        text =
-                        if (weather.value.daily.isNotEmpty()) {
-                            "${weather.value.daily[0].maxTemp}/${weather.value.daily[0].minTemp}°C"
-                        } else {
-                            "0/0°C"
-                        },
-                        style = TextStyle(fontSize = 16.sp),
-                        color = Color.White
+                    Icon(
+                        modifier = Modifier
+                            .padding(start = 10.dp, end = 10.dp, top = 20.dp)
+                            .size(35.dp, 35.dp),
+                        painter = painterResource(R.drawable.ic_search),
+                        tint = Color.White,
+                        contentDescription = "Search icon button"
                     )
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_sync),
-                            tint = Color.White,
-                            contentDescription = "Sync icon button"
-                        )
-                    }
+                    AutoCompleteValueSample(listOf("Moscow", "London", "Paris"), weather, context)
                 }
             }
         }
