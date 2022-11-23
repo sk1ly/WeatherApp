@@ -13,6 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import ru.sk1ly.weatherapp.api.WeatherApiRequestor
+import ru.sk1ly.weatherapp.data.City
 import ru.sk1ly.weatherapp.data.Weather
 import ru.sk1ly.weatherapp.elements.MainCard
 import ru.sk1ly.weatherapp.elements.TabLayout
@@ -26,7 +28,7 @@ class MainActivity : ComponentActivity() {
                 val weather: MutableState<Weather> = remember {
                     mutableStateOf(Weather())
                 }
-                WeatherApiRequestor.getWeather("Moscow", weather, this)
+                WeatherApiRequestor.getWeather(City(), weather, this) // TODO Добавить дефолтный город?
                 Image(
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.FillBounds,

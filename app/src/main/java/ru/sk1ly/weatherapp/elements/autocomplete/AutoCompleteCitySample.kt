@@ -1,61 +1,48 @@
-package ru.sk1ly.weatherapp.elements
+package ru.sk1ly.weatherapp.elements.autocomplete
 
 // See this: https://github.com/pauloaapereira/Medium_JetpackCompose_AutoCompleteSearchBar
 
 import android.content.Context
-import android.opengl.Visibility
-import android.view.View
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import ru.sk1ly.weatherapp.WeatherApiRequestor
+import ru.sk1ly.weatherapp.api.WeatherApiRequestor
+import ru.sk1ly.weatherapp.data.City
 import ru.sk1ly.weatherapp.data.Weather
-import ru.sk1ly.weatherapp.elements.autocomplete.AutoCompleteBox
-import ru.sk1ly.weatherapp.elements.autocomplete.utils.AutoCompleteSearchBarTag
-import ru.sk1ly.weatherapp.elements.autocomplete.utils.asAutoCompleteEntities
 import ru.sk1ly.weatherapp.elements.TextSearchBar
-import java.util.Locale
 
 @ExperimentalAnimationApi
 @Composable
-fun AutoCompleteValueSample(items: List<String>, weather: MutableState<Weather>, context: Context) {
-
-    val autoCompleteEntities = items.asAutoCompleteEntities(
-        filter = { item, query ->
-            item.lowercase(Locale.getDefault())
-                .startsWith(query.lowercase(Locale.getDefault()))
-        }
-    )
-
+fun AutoCompleteCitySample(cities: List<City>, weather: MutableState<Weather>, context: Context) {
     AutoCompleteBox(
-        items = autoCompleteEntities,
-        itemContent = { item ->
-            ValueAutoCompleteItem(item.value)
+        items = cities,
+        itemContent = { city ->
+            CityAutoCompleteItem(city)
         }
     ) {
         var value by remember { mutableStateOf("") }
         val view = LocalView.current
 
-        onItemSelected { item ->
-            value = item.value
+        onItemSelected { city ->
+            value = city.cityName
             filter(value)
             view.clearFocus()
-            WeatherApiRequestor.getWeather(item.value, weather, context)
+            WeatherApiRequestor.getWeather(city, weather, context)
         }
 
         TextSearchBar(
-            modifier = Modifier.testTag(AutoCompleteSearchBarTag).padding(bottom = 8.dp),
+            modifier = Modifier
+                .testTag("AutoCompleteSearchBar")
+                .padding(bottom = 8.dp),
             value = value,
             label = "Search city",
             onDoneActionClick = {
@@ -78,13 +65,16 @@ fun AutoCompleteValueSample(items: List<String>, weather: MutableState<Weather>,
 }
 
 @Composable
-fun ValueAutoCompleteItem(item: String) {
+fun CityAutoCompleteItem(city: City) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text(text = item, style = MaterialTheme.typography.subtitle2, color = Color.White)
+        Text(
+            text = "${city.cityName}, ${city.countryName}",
+            color = Color.White
+        )
     }
 }

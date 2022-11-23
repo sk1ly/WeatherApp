@@ -30,22 +30,27 @@ fun ListItem(hourlyWeather: HourlyWeather) {
         shape = RoundedCornerShape(10.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(70.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
-                modifier = Modifier.padding(
-                    start = 8.dp,
-                    top = 5.dp,
-                    bottom = 5.dp
-                )
+                modifier = Modifier
+                    .width(150.dp)
+                    .padding(
+                        start = 8.dp,
+                        top = 5.dp,
+                        bottom = 5.dp
+                    ),
             ) {
                 Text(
                     text = hourlyWeather.time,
                     color = Color.White
                 )
                 Text(
+                    modifier = Modifier.padding(top = 3.dp),
                     text = WeatherCode.getDescription(hourlyWeather.weatherCode),
                     color = Color.White,
                     style = TextStyle(fontSize = 14.sp)
@@ -78,22 +83,27 @@ fun ListItem(dailyWeather: DailyWeather) {
         shape = RoundedCornerShape(10.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(70.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
-                modifier = Modifier.padding(
-                    start = 8.dp,
-                    top = 5.dp,
-                    bottom = 5.dp
-                )
+                modifier = Modifier
+                    .width(150.dp)
+                    .padding(
+                        start = 8.dp,
+                        top = 5.dp,
+                        bottom = 5.dp
+                    )
             ) {
                 Text(
                     text = dailyWeather.date,
                     color = Color.White
                 )
                 Text(
+                    modifier = Modifier.padding(top = 3.dp),
                     text = WeatherCode.getDescription(dailyWeather.weatherCode),
                     color = Color.White,
                     style = TextStyle(fontSize = 14.sp)

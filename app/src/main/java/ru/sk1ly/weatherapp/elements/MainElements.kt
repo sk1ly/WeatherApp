@@ -3,7 +3,6 @@ package ru.sk1ly.weatherapp.elements
 import android.content.Context
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -15,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,8 +24,10 @@ import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 import ru.sk1ly.weatherapp.R
+import ru.sk1ly.weatherapp.data.City
 import ru.sk1ly.weatherapp.data.Weather
 import ru.sk1ly.weatherapp.data.WeatherCode
+import ru.sk1ly.weatherapp.elements.autocomplete.AutoCompleteCitySample
 import ru.sk1ly.weatherapp.ui.theme.BlueLight
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -75,7 +77,7 @@ fun MainCard(weather: MutableState<Weather>, context: Context) {
                     )
                 }
                 Text(
-                    text = weather.value.city,
+                    text = weather.value.city.cityName,
                     style = TextStyle(fontSize = 24.sp),
                     color = Color.White
                 )
@@ -113,7 +115,18 @@ fun MainCard(weather: MutableState<Weather>, context: Context) {
                         tint = Color.White,
                         contentDescription = "Search icon button"
                     )
-                    AutoCompleteValueSample(listOf("Moscow", "London", "Paris"), weather, context)
+                    val cities = mutableListOf<City>()
+                    stringArrayResource(id = R.array.cities).forEach {
+                        val parts = it.split(";")
+                        cities.add(City(
+                            cityName = parts[0],
+                            adminName = parts[1],
+                            countryName = parts[2],
+                            latitude = parts[3].toFloat(),
+                            longitude = parts[4].toFloat()
+                        ))
+                    }
+                    AutoCompleteCitySample(cities, weather, context)
                 }
             }
         }
