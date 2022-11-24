@@ -63,9 +63,9 @@ fun ListItem(hourlyWeather: HourlyWeather) {
             )
             Image(
                 modifier = Modifier
-                    .size(35.dp)
-                    .padding(top = 5.dp, bottom = 5.dp, end = 8.dp),
-                painter = painterResource(id = R.drawable.sunny_cloudy), // TODO
+                    .size(50.dp)
+                    .padding(top = 5.dp, bottom = 5.dp, end = 15.dp),
+                painter = painterResource(id = WeatherCode.getDrawable(hourlyWeather.weatherCode)),
                 contentDescription = "Weather icon",
             )
         }
@@ -116,9 +116,9 @@ fun ListItem(dailyWeather: DailyWeather) {
             )
             Image(
                 modifier = Modifier
-                    .size(35.dp)
-                    .padding(top = 5.dp, bottom = 5.dp, end = 8.dp),
-                painter = painterResource(id = R.drawable.sunny_cloudy), // TODO
+                    .size(50.dp)
+                    .padding(top = 5.dp, bottom = 5.dp, end = 15.dp),
+                painter = painterResource(id = WeatherCode.getDrawable(dailyWeather.weatherCode)),
                 contentDescription = "Weather icon",
             )
         }

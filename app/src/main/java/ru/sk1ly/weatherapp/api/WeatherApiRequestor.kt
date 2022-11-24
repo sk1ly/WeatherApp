@@ -8,6 +8,12 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONObject
 import ru.sk1ly.weatherapp.data.*
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatter.ofLocalizedDateTime
+import java.time.format.FormatStyle
 import java.util.*
 
 class WeatherApiRequestor {
@@ -15,15 +21,14 @@ class WeatherApiRequestor {
     companion object {
 
         private const val WEATHER_API_URL = "https://api.open-meteo.com/v1/forecast"
-
         private const val WEATHER_API_CONST_PARAMS = "current_weather=true" +
                 "&hourly=temperature_2m,weathercode" +
                 "&daily=temperature_2m_max,temperature_2m_min,weathercode" +
-                "&timezone=Europe/Moscow"
+                "&timezone="
 
         fun getWeather(city: City, mutableState: MutableState<Weather>, context: Context) {
             val url =
-                "${WEATHER_API_URL}?latitude=${city.latitude}&longitude=${city.longitude}&${WEATHER_API_CONST_PARAMS}"
+                "${WEATHER_API_URL}?latitude=${city.latitude}&longitude=${city.longitude}&${WEATHER_API_CONST_PARAMS}" + TimeZone.getDefault().id
             val queue = Volley.newRequestQueue(context)
             val request = StringRequest(
                 Request.Method.GET,
@@ -42,6 +47,7 @@ class WeatherApiRequestor {
         private fun parseWeather(city: City, response: String): Weather {
             val responseJson = JSONObject(response)
             val weather = Weather(city = city)
+            weather.requestedDateTime = Calendar.getInstance().time.toString("dd.MM.yyyy HH:mm:ss")
             weather.current = parseCurrentWeather(responseJson)
             weather.hourly = parseHourlyWeather(responseJson)
             weather.daily = parseDailyWeather(responseJson)
@@ -63,7 +69,7 @@ class WeatherApiRequestor {
             val tempArray = hourlyJson.getJSONArray("temperature_2m")
             val weatherCodeArray = hourlyJson.getJSONArray("weathercode")
             val hourlyWeather = mutableListOf<HourlyWeather>()
-            val currentHour = Calendar.getInstance(TimeZone.getTimeZone("Europe/Moscow")).get(Calendar.HOUR_OF_DAY)
+            val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
             for (i in currentHour until currentHour + 24) {
                 hourlyWeather.add(
                     HourlyWeather(
@@ -96,4 +102,9 @@ class WeatherApiRequestor {
             return dailyWeather
         }
     }
+}
+
+fun Date.toString(format: String, locale: Locale = Locale.getDefault()): String {
+    val formatter = SimpleDateFormat(format, locale)
+    return formatter.format(this)
 }

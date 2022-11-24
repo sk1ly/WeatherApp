@@ -14,6 +14,8 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
+private const val LIMIT_OF_RESULT_ROWS = 5
+
 private typealias ItemSelected<T> = (T) -> Unit
 
 @Stable
@@ -50,7 +52,7 @@ class AutoCompleteState<T : AutoCompleteEntity>(private val startItems: List<T>)
     override fun filter(query: String) {
         filteredItems = startItems.filter { entity ->
             entity.filter(query)
-        }
+        }.take(LIMIT_OF_RESULT_ROWS)
     }
 
     override fun onItemSelected(block: ItemSelected<T>) {

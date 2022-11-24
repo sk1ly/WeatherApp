@@ -24,6 +24,7 @@ import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 import ru.sk1ly.weatherapp.R
+import ru.sk1ly.weatherapp.api.WeatherApiRequestor
 import ru.sk1ly.weatherapp.data.City
 import ru.sk1ly.weatherapp.data.Weather
 import ru.sk1ly.weatherapp.data.WeatherCode
@@ -55,11 +56,11 @@ fun MainCard(weather: MutableState<Weather>, context: Context) {
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = weather.value.current.dateTime,
+                            text = weather.value.requestedDateTime,
                             style = TextStyle(fontSize = 15.sp),
                             color = Color.White
                         )
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = { WeatherApiRequestor.getWeather(weather.value.city, weather, context) }) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_sync),
                                 tint = Color.White,
@@ -67,25 +68,30 @@ fun MainCard(weather: MutableState<Weather>, context: Context) {
                             )
                         }
                     }
-                    Image(
-                        // TODO Заменить на инфо, переместить к температуре
-                        modifier = Modifier
-                            .size(35.dp)
-                            .padding(top = 5.dp, bottom = 5.dp, end = 8.dp),
-                        painter = painterResource(id = R.drawable.sunny_cloudy),
-                        contentDescription = "Weather icon",
-                    )
+                    IconButton(onClick = { /*TODO*/ }) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_info),
+                            tint = Color.White,
+                            contentDescription = "Info icon button"
+                        )
+                    }
                 }
                 Text(
                     text = weather.value.city.cityName,
                     style = TextStyle(fontSize = 24.sp),
                     color = Color.White
                 )
-                Text(
-                    text = "${weather.value.current.temp}°C",
-                    style = TextStyle(fontSize = 65.sp),
-                    color = Color.White
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "${weather.value.current.temp.toFloat().toInt()}°C",
+                        style = TextStyle(fontSize = 65.sp),
+                        color = Color.White
+                    )
+                    Image(
+                        modifier = Modifier.padding(start = 15.dp).size(65.dp, 65.dp),
+                        painter = painterResource(id = WeatherCode.getDrawable(weather.value.current.weatherCode)),
+                        contentDescription = "Current weather icon")
+                }
                 Text(
                     text = WeatherCode.getDescription(weather.value.current.weatherCode),
                     style = TextStyle(fontSize = 16.sp),
