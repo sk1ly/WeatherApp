@@ -2,6 +2,7 @@ package ru.sk1ly.weatherapp.elements
 
 import android.content.Context
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
@@ -29,7 +31,7 @@ import ru.sk1ly.weatherapp.data.City
 import ru.sk1ly.weatherapp.data.Weather
 import ru.sk1ly.weatherapp.data.WeatherCode
 import ru.sk1ly.weatherapp.elements.autocomplete.AutoCompleteCitySample
-import ru.sk1ly.weatherapp.ui.theme.BlueLight
+import ru.sk1ly.weatherapp.ui.theme.DarkDeepBlue
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -40,7 +42,7 @@ fun MainCard(weather: MutableState<Weather>, context: Context) {
     ) {
         Card(
             modifier = Modifier.fillMaxWidth(),
-            backgroundColor = BlueLight,
+            backgroundColor = DarkDeepBlue,
             shape = RoundedCornerShape(10.dp),
             elevation = 0.dp
         ) {
@@ -56,17 +58,11 @@ fun MainCard(weather: MutableState<Weather>, context: Context) {
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = weather.value.requestedDateTime,
+                            text = "Last update on " + weather.value.requestedDateTime.split(" ")[1],
                             style = TextStyle(fontSize = 15.sp),
                             color = Color.White
                         )
-                        IconButton(onClick = { WeatherApiRequestor.getWeather(weather.value.city, weather, context) }) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_sync),
-                                tint = Color.White,
-                                contentDescription = "Sync icon button"
-                            )
-                        }
+                        SyncButtonAndTime(weather, context)
                     }
                     IconButton(onClick = { /*TODO*/ }) {
                         Icon(
@@ -88,9 +84,12 @@ fun MainCard(weather: MutableState<Weather>, context: Context) {
                         color = Color.White
                     )
                     Image(
-                        modifier = Modifier.padding(start = 15.dp).size(65.dp, 65.dp),
+                        modifier = Modifier
+                            .padding(start = 15.dp)
+                            .size(65.dp, 65.dp),
                         painter = painterResource(id = WeatherCode.getDrawable(weather.value.current.weatherCode)),
-                        contentDescription = "Current weather icon")
+                        contentDescription = "Current weather icon"
+                    )
                 }
                 Text(
                     text = WeatherCode.getDescription(weather.value.current.weatherCode),
@@ -124,18 +123,52 @@ fun MainCard(weather: MutableState<Weather>, context: Context) {
                     val cities = mutableListOf<City>()
                     stringArrayResource(id = R.array.cities).forEach {
                         val parts = it.split(";")
-                        cities.add(City(
-                            cityName = parts[0],
-                            adminName = parts[1],
-                            countryName = parts[2],
-                            latitude = parts[3].toFloat(),
-                            longitude = parts[4].toFloat()
-                        ))
+                        cities.add(
+                            City(
+                                cityName = parts[0],
+                                adminName = parts[1],
+                                countryName = parts[2],
+                                latitude = parts[3].toFloat(),
+                                longitude = parts[4].toFloat()
+                            )
+                        )
                     }
                     AutoCompleteCitySample(cities, weather, context)
                 }
             }
         }
+    }
+}
+
+@Composable
+fun SyncButtonAndTime(weather: MutableState<Weather>, context: Context) {
+
+    var isRotated by remember {
+        mutableStateOf(false)
+    }
+
+    val angle: Float by animateFloatAsState(
+        targetValue = if (isRotated) 360F else 0F,
+        animationSpec = tween(
+            durationMillis = 1000,
+            easing = LinearEasing,
+        )
+    )
+
+    IconButton(onClick = {
+        isRotated = !isRotated
+        WeatherApiRequestor.getWeather(
+            weather.value.city,
+            weather,
+            context
+        )
+    }) {
+        Icon(
+            modifier = Modifier.rotate(angle),
+            painter = painterResource(R.drawable.ic_sync),
+            tint = Color.White,
+            contentDescription = "Sync icon button"
+        )
     }
 }
 
@@ -159,7 +192,7 @@ fun TabLayout(weather: MutableState<Weather>) {
                     Modifier.pagerTabIndicatorOffset(pagerState, pos)
                 )
             },
-            backgroundColor = BlueLight,
+            backgroundColor = DarkDeepBlue,
             contentColor = Color.White
         ) {
             tabList.forEachIndexed { index, text ->

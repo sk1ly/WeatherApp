@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.WeatherApp" parent="android:Theme.Material.Light.NoActionBar.Fullscreen">
-        <item name="android:statusBarColor">@color/blue_light</item>
+    <style name="Theme.WeatherApp" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/dark_sky</item>
     </style>
 </resources>

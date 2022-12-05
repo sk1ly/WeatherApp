@@ -13,11 +13,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.sk1ly.weatherapp.R
 import ru.sk1ly.weatherapp.data.DailyWeather
 import ru.sk1ly.weatherapp.data.HourlyWeather
 import ru.sk1ly.weatherapp.data.WeatherCode
-import ru.sk1ly.weatherapp.ui.theme.BlueLight
+import ru.sk1ly.weatherapp.ui.theme.DarkDeepBlue
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun ListItem(hourlyWeather: HourlyWeather) {
@@ -25,7 +26,7 @@ fun ListItem(hourlyWeather: HourlyWeather) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(3.dp),
-        backgroundColor = BlueLight,
+        backgroundColor = DarkDeepBlue,
         elevation = 0.dp,
         shape = RoundedCornerShape(10.dp)
     ) {
@@ -78,7 +79,7 @@ fun ListItem(dailyWeather: DailyWeather) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(3.dp),
-        backgroundColor = BlueLight,
+        backgroundColor = DarkDeepBlue,
         elevation = 0.dp,
         shape = RoundedCornerShape(10.dp)
     ) {
@@ -99,7 +100,10 @@ fun ListItem(dailyWeather: DailyWeather) {
                     )
             ) {
                 Text(
-                    text = dailyWeather.date,
+                    text = LocalDate.parse(dailyWeather.date, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                        .dayOfWeek.name
+                        .lowercase()
+                        .replaceFirstChar { it.uppercase() },
                     color = Color.White
                 )
                 Text(
