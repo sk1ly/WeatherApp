@@ -1,19 +1,16 @@
 package ru.sk1ly.weatherapp.api
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.google.gson.Gson
 import org.json.JSONObject
 import ru.sk1ly.weatherapp.data.*
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeFormatter.ofLocalizedDateTime
-import java.time.format.FormatStyle
 import java.util.*
 
 class WeatherApiRequestor {
@@ -26,7 +23,7 @@ class WeatherApiRequestor {
                 "&daily=temperature_2m_max,temperature_2m_min,weathercode" +
                 "&timezone="
 
-        fun getWeather(city: City, mutableState: MutableState<Weather>, context: Context) {
+        fun getWeather(city: City, mutableState: MutableState<Weather>, preferences: SharedPreferences, context: Context) {
             val url =
                 "${WEATHER_API_URL}?latitude=${city.latitude}&longitude=${city.longitude}&${WEATHER_API_CONST_PARAMS}" + TimeZone.getDefault().id
             val queue = Volley.newRequestQueue(context)
@@ -34,8 +31,9 @@ class WeatherApiRequestor {
                 Request.Method.GET,
                 url,
                 { response ->
-                    mutableState.value = parseWeather(city, response)
                     Log.d("MyLog", "WeatherApiResponse: $response")
+                    mutableState.value = parseWeather(city, response)
+                    putWeatherToCache(mutableState.value, preferences)
                 },
                 { error ->
                     Log.d("MyLog", "VolleyError: $error")
@@ -100,6 +98,14 @@ class WeatherApiRequestor {
                 )
             }
             return dailyWeather
+        }
+
+        private fun putWeatherToCache(weather: Weather, preferences: SharedPreferences) {
+            val prefsEditor = preferences.edit()
+            val gson = Gson()
+            val json = gson.toJson(weather)
+            prefsEditor.putString("currentWeather", json)
+            prefsEditor.apply()
         }
     }
 }

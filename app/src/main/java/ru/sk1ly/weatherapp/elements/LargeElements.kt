@@ -1,6 +1,7 @@
 package ru.sk1ly.weatherapp.elements
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
@@ -35,7 +36,7 @@ import ru.sk1ly.weatherapp.ui.theme.DarkDeepBlue
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun MainCard(weather: MutableState<Weather>, context: Context) {
+fun MainCard(weather: MutableState<Weather>, preferences: SharedPreferences, context: Context) {
 
     Column(
         modifier = Modifier.padding(5.dp)
@@ -62,7 +63,7 @@ fun MainCard(weather: MutableState<Weather>, context: Context) {
                             style = TextStyle(fontSize = 15.sp),
                             color = Color.White
                         )
-                        SyncButtonAndTime(weather, context)
+                        SyncButtonAndTime(weather, preferences, context)
                     }
                     IconButton(onClick = { /*TODO*/ }) {
                         Icon(
@@ -133,7 +134,7 @@ fun MainCard(weather: MutableState<Weather>, context: Context) {
                             )
                         )
                     }
-                    AutoCompleteCitySample(cities, weather, context)
+                    AutoCompleteCitySample(cities, weather, preferences, context)
                 }
             }
         }
@@ -141,7 +142,7 @@ fun MainCard(weather: MutableState<Weather>, context: Context) {
 }
 
 @Composable
-fun SyncButtonAndTime(weather: MutableState<Weather>, context: Context) {
+fun SyncButtonAndTime(weather: MutableState<Weather>, preferences: SharedPreferences, context: Context) {
 
     var isRotated by remember {
         mutableStateOf(false)
@@ -160,6 +161,7 @@ fun SyncButtonAndTime(weather: MutableState<Weather>, context: Context) {
         WeatherApiRequestor.getWeather(
             weather.value.city,
             weather,
+            preferences,
             context
         )
     }) {

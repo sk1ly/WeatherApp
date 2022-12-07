@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">WeatherApp</string>
+    <string name="app_name">Weather</string>
     <string-array name="cities">
         <item>Tokyo;Tōkyō;Japan;35.6839;139.7744</item>
         <item>Jakarta;Jakarta;Indonesia;-6.2146;106.8451</item>

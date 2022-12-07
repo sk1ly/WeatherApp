@@ -3,6 +3,7 @@ package ru.sk1ly.weatherapp.elements.autocomplete
 // See this: https://github.com/pauloaapereira/Medium_JetpackCompose_AutoCompleteSearchBar
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,7 +23,8 @@ import ru.sk1ly.weatherapp.elements.TextSearchBar
 
 @ExperimentalAnimationApi
 @Composable
-fun AutoCompleteCitySample(cities: List<City>, weather: MutableState<Weather>, context: Context) {
+fun AutoCompleteCitySample(cities: List<City>, weather: MutableState<Weather>, preferences: SharedPreferences, context: Context) {
+
     AutoCompleteBox(
         items = cities,
         itemContent = { city ->
@@ -36,7 +38,7 @@ fun AutoCompleteCitySample(cities: List<City>, weather: MutableState<Weather>, c
             value = city.cityName
             filter(value)
             view.clearFocus()
-            WeatherApiRequestor.getWeather(city, weather, context)
+            WeatherApiRequestor.getWeather(city, weather, preferences, context)
         }
 
         TextSearchBar(
