@@ -33,6 +33,7 @@ import ru.sk1ly.weatherapp.data.Weather
 import ru.sk1ly.weatherapp.data.WeatherCode
 import ru.sk1ly.weatherapp.elements.autocomplete.AutoCompleteCitySample
 import ru.sk1ly.weatherapp.ui.theme.DarkDeepBlue
+import java.util.Calendar
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -59,7 +60,7 @@ fun MainCard(weather: MutableState<Weather>, preferences: SharedPreferences, con
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "Last update on " + weather.value.requestedDateTime.split(" ")[1],
+                            text = "Last update on " + getLastUpdatePrettyText(weather.value.requestedDateTime),
                             style = TextStyle(fontSize = 15.sp),
                             color = Color.White
                         )
@@ -141,29 +142,45 @@ fun MainCard(weather: MutableState<Weather>, preferences: SharedPreferences, con
     }
 }
 
+fun getLastUpdatePrettyText(lastUpdateDateTime: Long): String {
+    val dateTimeDiff = Calendar.getInstance().timeInMillis.minus(lastUpdateDateTime)
+    return when (dateTimeDiff) {
+        in 0..60000 -> "recently"
+        in 60001..3600000 -> dateTimeDiff.div(60000).toString() + " minutes ago"
+        in 3600001..86400000 -> dateTimeDiff.div(3600000).toString() + " hours ago"
+        in 86400001..172800000 -> "yesterday"
+        in 172800001..604800000 -> dateTimeDiff.div(86400000).toString() + " days ago"
+        else -> dateTimeDiff.div(604800000).toString() + " weeks ago"
+    }
+}
+
+var currentRefreshRotate = 0F
+
 @Composable
 fun SyncButtonAndTime(weather: MutableState<Weather>, preferences: SharedPreferences, context: Context) {
 
-    var isRotated by remember {
+    var needAnimate by remember {
         mutableStateOf(false)
     }
 
     val angle: Float by animateFloatAsState(
-        targetValue = if (isRotated) 360F else 0F,
+        targetValue = if (needAnimate) { currentRefreshRotate += 360F; currentRefreshRotate } else currentRefreshRotate,
         animationSpec = tween(
-            durationMillis = 1000,
+            durationMillis = 500,
             easing = LinearEasing,
-        )
+        ),
+        finishedListener = {
+            WeatherApiRequestor.getWeather(
+                weather.value.city,
+                weather,
+                preferences,
+                context
+            )
+            needAnimate = false
+        }
     )
-
     IconButton(onClick = {
-        isRotated = !isRotated
-        WeatherApiRequestor.getWeather(
-            weather.value.city,
-            weather,
-            preferences,
-            context
-        )
+        needAnimate = true
     }) {
         Icon(
             modifier = Modifier.rotate(angle),

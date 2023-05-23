@@ -45,7 +45,7 @@ class WeatherApiRequestor {
         private fun parseWeather(city: City, response: String): Weather {
             val responseJson = JSONObject(response)
             val weather = Weather(city = city)
-            weather.requestedDateTime = Calendar.getInstance().time.toString("dd.MM.yyyy HH:mm:ss")
+            weather.requestedDateTime = Calendar.getInstance().timeInMillis
             weather.current = parseCurrentWeather(responseJson)
             weather.hourly = parseHourlyWeather(responseJson)
             weather.daily = parseDailyWeather(responseJson)
