@@ -59,8 +59,10 @@ fun AutoCompleteCitySample(cities: List<City>, weather: MutableState<Weather>, p
                 isSearching = focusState.hasFocus
             },
             onValueChanged = { query ->
-                value = query
-                filter(value)
+                if (query.length <= 10) {
+                    value = query
+                    filter(value)
+                }
             }
         )
     }

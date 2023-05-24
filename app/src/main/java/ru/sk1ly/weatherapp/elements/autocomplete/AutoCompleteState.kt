@@ -14,10 +14,8 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-private const val LIMIT_OF_RESULT_ROWS = 5
-
 private typealias ItemSelected<T> = (T) -> Unit
-
+private var lastLengthOfSearchValue: Int = 0;
 @Stable
 interface AutoCompleteScope<T : AutoCompleteEntity> : AutoCompleteDesignScope {
     var isSearching: Boolean
@@ -50,9 +48,17 @@ class AutoCompleteState<T : AutoCompleteEntity>(private val startItems: List<T>)
     override var boxShape: Shape by mutableStateOf(RoundedCornerShape(8.dp))
 
     override fun filter(query: String) {
-        filteredItems = startItems.filter { entity ->
-            entity.filter(query)
-        }.take(LIMIT_OF_RESULT_ROWS)
+        filteredItems =
+            if (query.length <= 1 || query.length < lastLengthOfSearchValue) {
+                startItems.filter { entity ->
+                    entity.filter(query)
+                }
+            } else {
+                filteredItems.filter { entity ->
+                    entity.filter(query)
+                }
+            }
+        lastLengthOfSearchValue = query.length
     }
 
     override fun onItemSelected(block: ItemSelected<T>) {
